@@ -2,43 +2,79 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Metal Slug - Web Arcade Port</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Metal Slug - Web Arcade Edition</title>
   
-  <!-- Metadatos para que se vea increíble al compartir en X (Twitter) -->
-  <meta property="og:title" content="Metal Slug Arcade - Web Port" />
-  <meta property="og:description" content="¡Juega a Metal Slug directamente desde el navegador gracias a WebAssembly!" />
+  <!-- Metadatos de Redes Sociales (Twitter / X Cards 10/10) -->
+  <meta name="description" content="Port Web Oficial en WebAssembly de Metal Slug Arcade." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Metal Slug Arcade - Web Edition" />
+  <meta property="og:description" content="¡Juega gratis a Metal Slug desde tu navegador con soporte para mandos y pantalla táctil!" />
+  <meta property="og:image" content="https://loscaco.github.io/MetalSlugWeb/preview.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Metal Slug Arcade - Web Port" />
+  <meta name="twitter:description" content="¡Juega a Metal Slug directamente desde tu navegador!" />
+
+  <!-- Preconexión rápida a la CDN de EmulatorJS -->
+  <link rel="preconnect" href="https://cdn.emulatorjs.org" crossorigin>
 
   <style>
-    body {
+    /* Reset & Protección Total de Pantalla */
+    *, *::before, *::after {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      background-color: #0b0b0b;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #050505;
       color: #ffffff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    body {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
+      padding: 10px;
+    }
+
+    header {
+      margin-bottom: 8px;
+      text-align: center;
+      flex-shrink: 0;
     }
 
     h1 {
-      margin-bottom: 5px;
-      font-size: 1.6rem;
-      letter-spacing: 2px;
+      font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+      letter-spacing: 3px;
       color: #ffcc00;
+      text-transform: uppercase;
+      text-shadow: 0 0 12px rgba(255, 204, 0, 0.6);
     }
 
-    #game-wrapper {
-      width: 800px;
-      height: 600px;
-      max-width: 100%;
-      border: 4px solid #333;
+    /* Contenedor Arcade Responsivo 4:3 */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      max-height: 80vh;
+      aspect-ratio: 4 / 3;
+      background: #000;
+      border: 3px solid #222;
       border-radius: 8px;
-      box-shadow: 0 0 25px rgba(255, 204, 0, 0.2);
-      background-color: #000;
+      box-shadow: 0 0 30px rgba(255, 204, 0, 0.25);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     #game {
@@ -46,39 +82,133 @@
       height: 100%;
     }
 
-    .instructions {
-      margin-top: 15px;
-      font-size: 0.85rem;
+    /* Renderizado Pixel-Art Nítido 10/10 (Sin borrosidad en 4K/HD) */
+    #game canvas {
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      image-rendering: pixelated;
+    }
+
+    /* Overlay "Insert Coin" (Solución al Bloqueo de Audio Context) */
+    #overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.94);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      cursor: pointer;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .coin-btn {
+      font-size: clamp(1rem, 3vw, 1.4rem);
+      font-weight: bold;
+      color: #ffcc00;
+      border: 2px solid #ffcc00;
+      padding: 12px 24px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      animation: blink 1.2s infinite;
+      box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
+      text-align: center;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    footer {
+      margin-top: 10px;
+      font-size: clamp(0.7rem, 2vw, 0.85rem);
       color: #888;
       text-align: center;
-      max-width: 800px;
+      max-width: 900px;
+      flex-shrink: 0;
       line-height: 1.4;
+    }
+
+    code {
+      background: rgba(255, 204, 0, 0.2);
+      color: #ffdd66;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
     }
   </style>
 </head>
 <body>
 
-  <h1>METAL SLUG ARCADE</h1>
+  <header>
+    <h1>Metal Slug Web Edition</h1>
+  </header>
 
-  <div id="game-wrapper">
+  <div id="game-container">
+    <!-- Overlay interactivo anti-bloqueo de sonido -->
+    <div id="overlay" onclick="startGame()">
+      <div class="coin-btn">INSERT COIN / CLICK TO PLAY</div>
+      <p style="margin-top: 12px; color: #aaa; font-size: 0.85rem;">Haz clic para activar audio HD y controles</p>
+    </div>
+
     <div id="game"></div>
   </div>
 
-  <div class="instructions">
-    <p><strong>Controles:</strong> Insertar Moneda/Ficha = <code>Shift</code> | Start = <code>Enter</code> | Moverse = <code>Flechas del teclado</code> | Disparar/Saltar = <code>Z, X, C</code></p>
-  </div>
+  <footer>
+    <p><strong>Controles:</strong> Ficha = <code>Shift</code> | Start = <code>Enter</code> | Moverse = <code>Flechas</code> | Disparar = <code>Z</code> | Saltar = <code>X</code> | Granada = <code>C</code></p>
+  </footer>
 
+  <!-- Script global y seguro de EmulatorJS -->
   <script type="text/javascript">
-    // Configuración del emulador WebAssembly
-    EJS_player = '#game';
-    EJS_core = 'fbneo'; // Núcleo optimizado para Neo Geo y Arcade
-    EJS_gameName = 'Metal Slug';
-    EJS_gameUrl = 'mslug.zip'; // Ruta de tu ROM de juego
-    EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
-  </script>
-  
-  <!-- Cargador dinámico del emulador -->
-  <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+    // 1. Configuración de variables globales antes de la inyección
+    window.EJS_player = '#game';
+    window.EJS_core = 'fbneo';
+    window.EJS_gameName = 'Metal Slug';
+    window.EJS_gameUrl = 'mslug.zip';
+    window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+    window.EJS_startOnLoaded = true;
+    window.EJS_volume = 1.0;
 
+    // 2. Detección automática de controles para celulares / tablets
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      window.EJS_mobil = true;
+    }
+
+    var scriptLoaded = false;
+
+    function startGame() {
+      if (scriptLoaded) return;
+      scriptLoaded = true;
+
+      // 3. Solución al Bug de AudioContext suspendido en navegadores
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) {
+        const ctx = new AudioContext();
+        if (ctx.state === 'suspended') {
+          ctx.resume();
+        }
+      }
+
+      // 4. Ocultar el overlay de inicio con transición limpia
+      var overlay = document.getElementById('overlay');
+      overlay.style.opacity = '0';
+      overlay.style.pointerEvents = 'none';
+      setTimeout(function() { 
+        overlay.style.display = 'none'; 
+      }, 300);
+
+      // 5. Carga asíncrona segura de WebAssembly tras el clic
+      var loader = document.createElement('script');
+      loader.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+      loader.async = true;
+      document.body.appendChild(loader);
+    }
+  </script>
 </body>
 </html>
