@@ -212,8 +212,7 @@
   <main id="arcade-wrapper">
     <div id="crt-overlay"></div>
 
-    <!-- Ahora usa directamente la función global startGame() -->
-    <div id="hero-splash" onclick="startGame()">
+    <div id="hero-splash">
       <button class="arcade-btn-main">INSERT COIN / PLAY</button>
       <p style="margin-top: 12px; color: #777; font-size: 0.8rem; letter-spacing: 0.5px;">
         Haz clic o toca para iniciar el motor de juego y activar audio
@@ -228,56 +227,57 @@
     <div>📱 <strong>Celular:</strong> Controles táctiles automáticos activados.</div>
   </footer>
 
-  <!-- Script global directo sin encapsulamiento de objetos -->
   <script type="text/javascript">
-    var scriptLoaded = false;
+    document.addEventListener('DOMContentLoaded', function() {
+      var heroSplash = document.getElementById('hero-splash');
+      var scriptLoaded = false;
 
-    function startGame() {
-      if (scriptLoaded) return;
-      scriptLoaded = true;
+      heroSplash.addEventListener('click', function() {
+        if (scriptLoaded) return;
+        scriptLoaded = true;
 
-      // Actualizar telemetría visual
-      document.getElementById('val-status').innerText = "RUNNING";
-      document.getElementById('val-status').style.color = "#00ffcc";
+        // Actualizar telemetría visual
+        document.getElementById('val-status').innerText = "RUNNING";
+        document.getElementById('val-status').style.color = "#00ffcc";
 
-      // Desvanecer splash screen limpiamente
-      var splash = document.getElementById('hero-splash');
-      splash.style.opacity = '0';
-      splash.style.pointerEvents = 'none';
-      setTimeout(function() { 
-        splash.style.display = 'none'; 
-      }, 400);
+        // Desvanecer splash screen limpiamente
+        heroSplash.style.opacity = '0';
+        heroSplash.style.pointerEvents = 'none';
+        setTimeout(function() { 
+          heroSplash.style.display = 'none'; 
+        }, 400);
 
-      // Configuración global estricta para EmulatorJS
-      window.EJS_player = '#game-canvas-target';
-      window.EJS_core = 'fbneo';
-      window.EJS_gameName = 'Metal Slug';
-      window.EJS_gameUrl = 'mslug.zip';
-      window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
-      window.EJS_startOnLoaded = true;
-      window.EJS_volume = 1.0;
+        // Configuración global estricta para EmulatorJS
+        window.EJS_player = '#game-canvas-target';
+        window.EJS_core = 'fbneo';
+        window.EJS_gameName = 'Metal Slug';
+        window.EJS_gameUrl = 'mslug.zip';
+        window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+        window.EJS_startOnLoaded = true;
+        window.EJS_volume = 1.0;
 
-      // Detección y activación de controles táctiles para celulares y tablets
-      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        window.EJS_mobil = true;
-        window.EJS_touch = true;
-      }
+        // Detección y activación de controles táctiles
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+          window.EJS_mobil = true;
+          window.EJS_touch = true;
+        }
 
-      // Inyección segura del loader con manejo de errores de red
-      var loader = document.createElement('script');
-      loader.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
-      loader.async = true;
-      
-      loader.onerror = function() {
-        alert("Error al cargar los datos del emulador desde la CDN. Verifica tu conexión a internet.");
-        document.getElementById('val-status').innerText = "ERROR";
-        document.getElementById('val-status').style.color = "#ff3300";
-      };
+        // Inyección del loader
+        var loader = document.createElement('script');
+        loader.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+        loader.async = true;
+        
+        loader.onerror = function() {
+          alert("Error al cargar los datos del emulador desde la CDN.");
+          document.getElementById('val-status').innerText = "ERROR";
+          document.getElementById('val-status').style.color = "#ff3300";
+        };
 
-      document.body.appendChild(loader);
-    }
+        document.body.appendChild(loader);
+      });
+    });
 
-    // Prevenir el menú contextual predeterminado para evitar bloqueos táctiles
+    // Prevenir menú contextual
     document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
   </script>
 </body>
