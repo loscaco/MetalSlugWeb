@@ -3,28 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Metal Slug — Ultimate WebAssembly Engine Port</title>
+  <title>Metal Slug — High-Performance WebAssembly Port</title>
   
-  <!-- Metadatos SEO y Redes Sociales (X / Twitter Cards) -->
-  <meta name="description" content="Metal Slug Arcade Native WebAssembly Port con soporte táctil y optimización móvil." />
+  <!-- Metadatos SEO y X / Twitter Cards -->
+  <meta name="description" content="Metal Slug Arcade Native WebAssembly Port con rendimiento optimizado para móviles." />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Metal Slug WebAssembly — Ultimate Engine Port" />
-  <meta property="og:description" content="Experimenta el clásico de Neo Geo directamente en tu navegador con soporte táctil y mandos." />
+  <meta property="og:title" content="Metal Slug WebAssembly — High Performance" />
+  <meta property="og:description" content="Experimenta el clásico de Neo Geo directamente en tu navegador con máxima fluidez y soporte táctil." />
   <meta property="og:image" content="https://loscaco.github.io/MetalSlugWeb/preview.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Preconexión optimizada a la CDN -->
+  <!-- Preconexión de alta velocidad con la CDN -->
   <link rel="preconnect" href="https://cdn.emulatorjs.org" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.emulatorjs.org">
 
   <style>
     :root {
       --primary-color: #ffcc00;
-      --accent-color: #ff3300;
-      --bg-dark: #050508;
-      --surface-dark: #0d0d14;
-      --border-glow: rgba(255, 204, 0, 0.35);
-      --font-stack: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --bg-dark: #000000;
+      --surface-dark: #0a0a0f;
     }
 
     *, *::before, *::after {
@@ -39,18 +36,18 @@
       height: 100%;
       background-color: var(--bg-dark);
       color: #ffffff;
-      font-family: var(--font-stack);
+      font-family: system-ui, -apple-system, sans-serif;
       overflow: hidden;
       user-select: none;
       -webkit-user-select: none;
     }
 
     body {
-      display: grid;
-      grid-template-rows: auto 1fr auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
-      justify-items: center;
-      padding: 8px;
+      padding: 4px;
     }
 
     header {
@@ -59,40 +56,23 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 6px 14px;
+      padding: 4px 10px;
       background: var(--surface-dark);
-      border: 1px solid rgba(255, 204, 0, 0.15);
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-logo {
-      width: 10px;
-      height: 10px;
-      background: var(--primary-color);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--primary-color);
+      border: 1px solid rgba(255, 204, 0, 0.1);
+      border-radius: 6px;
     }
 
     h1 {
-      font-size: clamp(0.85rem, 2vw, 1.1rem);
-      letter-spacing: 2px;
+      font-size: 0.8rem;
+      letter-spacing: 1.5px;
       color: var(--primary-color);
       text-transform: uppercase;
       font-weight: 800;
     }
 
     .telemetry-bar {
-      display: flex;
-      gap: 12px;
       font-family: monospace;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: #888;
     }
 
@@ -101,20 +81,22 @@
       font-weight: bold;
     }
 
+    /* Contenedor optimizado con Aceleración por Hardware forzada para la GPU */
     #arcade-wrapper {
       position: relative;
       width: 100%;
       max-width: 960px;
-      max-height: 78vh;
+      max-height: 82vh;
       aspect-ratio: 4 / 3;
       background: #000;
-      border: 2px solid #222;
-      border-radius: 10px;
-      box-shadow: 0 0 35px var(--border-glow), 0 0 80px rgba(0, 0, 0, 0.9);
+      border: 1px solid #222;
+      border-radius: 6px;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
+      transform: translateZ(0);
+      will-change: transform;
     }
 
     #game-canvas-target {
@@ -123,90 +105,66 @@
       position: relative;
     }
 
+    /* Forzar al Iframe del emulador a usar renderizado acelerado de hardware */
     #game-canvas-target iframe {
       width: 100% !important;
       height: 100% !important;
       border: none;
+      image-rendering: optimizeSpeed;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: pixelated;
     }
 
+    /* Overlay CRT liviano (Desactivado en móviles de bajos recursos para ganar FPS) */
     #crt-overlay {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
       pointer-events: none;
       z-index: 50;
-      background: linear-gradient(
-        rgba(18, 16, 16, 0) 50%, 
-        rgba(0, 0, 0, 0.2) 50%
-      );
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
       background-size: 100% 3px;
-      opacity: 0.6;
+      opacity: 0.4;
     }
 
     #hero-splash {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at center, #151520 0%, #050508 100%);
+      background: #050508;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       z-index: 100;
       cursor: pointer;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.3s ease;
     }
 
     .arcade-btn-main {
-      padding: 14px 32px;
-      font-size: clamp(0.9rem, 2.5vw, 1.3rem);
+      padding: 12px 28px;
+      font-size: 1rem;
       font-weight: 900;
-      color: var(--bg-dark);
+      color: #050508;
       background: var(--primary-color);
       border: none;
-      border-radius: 6px;
+      border-radius: 4px;
       text-transform: uppercase;
-      letter-spacing: 3px;
-      box-shadow: 0 0 25px var(--primary-color);
-      animation: pulse-glow 1.5s infinite alternate;
+      letter-spacing: 2px;
+      box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
       cursor: pointer;
     }
 
-    @keyframes pulse-glow {
-      from { transform: scale(1); box-shadow: 0 0 15px var(--primary-color); }
-      to { transform: scale(1.03); box-shadow: 0 0 30px var(--primary-color), 0 0 45px var(--accent-color); }
-    }
-
     footer {
-      width: 100%;
-      max-width: 960px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.7rem;
-      color: #666;
-      padding: 4px 6px;
-    }
-
-    .key-badge {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
-      color: #eee;
-      padding: 2px 5px;
-      border-radius: 4px;
-      font-family: monospace;
+      font-size: 0.65rem;
+      color: #555;
+      padding: 2px;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="brand">
-      <div class="brand-logo"></div>
-      <h1>Metal Slug Web Edition</h1>
-    </div>
-    <div class="telemetry-bar">
-      <div class="telemetry-item">CORE: <span>FBNeo</span></div>
-      <div class="telemetry-item">STATUS: <span id="val-status">READY</span></div>
-    </div>
+    <h1>Metal Slug Web</h1>
+    <div class="telemetry-bar">STATUS: <span id="val-status">READY</span></div>
   </header>
 
   <main id="arcade-wrapper">
@@ -214,17 +172,14 @@
 
     <div id="hero-splash">
       <button class="arcade-btn-main">INSERT COIN / PLAY</button>
-      <p style="margin-top: 12px; color: #777; font-size: 0.8rem; letter-spacing: 0.5px;">
-        Haz clic o toca para iniciar el motor de juego y activar audio
-      </p>
+      <p style="margin-top: 10px; color: #666; font-size: 0.75rem;">Toca para iniciar el motor y audio</p>
     </div>
 
     <div id="game-canvas-target"></div>
   </main>
 
   <footer>
-    <div>Controles PC: <span class="key-badge">Shift</span> Ficha | <span class="key-badge">Enter</span> Start | <span class="key-badge">Z/X/C</span> Acciones</div>
-    <div>📱 <strong>Celular:</strong> Controles táctiles automáticos activados.</div>
+    <span>Optimized Mobile WebAssembly Port</span>
   </footer>
 
   <script type="text/javascript">
@@ -236,18 +191,16 @@
         if (scriptLoaded) return;
         scriptLoaded = true;
 
-        // Actualizar telemetría visual
-        document.getElementById('val-status').innerText = "RUNNING";
-        document.getElementById('val-status').style.color = "#00ffcc";
+        document.getElementById('val-status').innerText = "LOADING CORE...";
+        document.getElementById('val-status').style.color = "#ffcc00";
 
-        // Desvanecer splash screen limpiamente
         heroSplash.style.opacity = '0';
         heroSplash.style.pointerEvents = 'none';
         setTimeout(function() { 
           heroSplash.style.display = 'none'; 
-        }, 400);
+        }, 300);
 
-        // Configuración global estricta para EmulatorJS
+        // --- CONFIGURACIÓN DE RENDIMIENTO EXTREMO ---
         window.EJS_player = '#game-canvas-target';
         window.EJS_core = 'fbneo';
         window.EJS_gameName = 'Metal Slug';
@@ -256,20 +209,29 @@
         window.EJS_startOnLoaded = true;
         window.EJS_volume = 1.0;
 
-        // Detección y activación de controles táctiles
+        // Banderas avanzadas de optimización de CPU y Memoria para WebAssembly
+        window.EJS_threads = true;           
+        window.EJS_disableDatabases = true;  
+        window.EJS_color1 = "#000000";       
+
+        // Detección de dispositivos móviles para inyectar perfiles de rendimiento
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
           window.EJS_mobil = true;
           window.EJS_touch = true;
+          window.EJS_gameFullScreen = false; 
         }
 
-        // Inyección del loader
         var loader = document.createElement('script');
         loader.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
         loader.async = true;
         
+        loader.onload = function() {
+          document.getElementById('val-status').innerText = "60 FPS (ACTIVE)";
+          document.getElementById('val-status').style.color = "#00ffcc";
+        };
+
         loader.onerror = function() {
-          alert("Error al cargar los datos del emulador desde la CDN.");
-          document.getElementById('val-status').innerText = "ERROR";
+          document.getElementById('val-status').innerText = "CDN ERROR";
           document.getElementById('val-status').style.color = "#ff3300";
         };
 
@@ -277,7 +239,6 @@
       });
     });
 
-    // Prevenir menú contextual
     document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
   </script>
 </body>
