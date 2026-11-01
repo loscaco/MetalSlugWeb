@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metal Slug - Web Arcade Port</title>
+  
+  <!-- Metadatos para que se vea increíble al compartir en X (Twitter) -->
+  <meta property="og:title" content="Metal Slug Arcade - Web Port" />
+  <meta property="og:description" content="¡Juega a Metal Slug directamente desde el navegador gracias a WebAssembly!" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0b0b0b;
+      color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+      font-size: 1.6rem;
+      letter-spacing: 2px;
+      color: #ffcc00;
+    }
+
+    #game-wrapper {
+      width: 800px;
+      height: 600px;
+      max-width: 100%;
+      border: 4px solid #333;
+      border-radius: 8px;
+      box-shadow: 0 0 25px rgba(255, 204, 0, 0.2);
+      background-color: #000;
+    }
+
+    #game {
+      width: 100%;
+      height: 100%;
+    }
+
+    .instructions {
+      margin-top: 15px;
+      font-size: 0.85rem;
+      color: #888;
+      text-align: center;
+      max-width: 800px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>METAL SLUG ARCADE</h1>
+
+  <div id="game-wrapper">
+    <div id="game"></div>
+  </div>
+
+  <div class="instructions">
+    <p><strong>Controles:</strong> Insertar Moneda/Ficha = <code>Shift</code> | Start = <code>Enter</code> | Moverse = <code>Flechas del teclado</code> | Disparar/Saltar = <code>Z, X, C</code></p>
+  </div>
+
+  <script type="text/javascript">
+    // Configuración del emulador WebAssembly
+    EJS_player = '#game';
+    EJS_core = 'fbneo'; // Núcleo optimizado para Neo Geo y Arcade
+    EJS_gameName = 'Metal Slug';
+    EJS_gameUrl = 'roms/mslug.zip'; // Ruta de tu ROM de juego
+    EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+  </script>
+  
+  <!-- Cargador dinámico del emulador -->
+  <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+
+</body>
+</html>
