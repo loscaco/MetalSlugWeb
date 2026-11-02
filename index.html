@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Metal Slug — Ultimate Production Port</title>
+  <title>Metal Slug — Production Mobile Edition</title>
 
-  <meta name="description" content="Metal Slug Arcade WebAssembly Port optimizado para móviles." />
+  <meta name="description" content="Metal Slug Arcade WebAssembly Port optimizado para máximo rendimiento de FPS en dispositivos móviles." />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Metal Slug WebAssembly" />
+  <meta property="og:title" content="Metal Slug WebAssembly — High Performance" />
   <meta property="og:image" content="https://loscaco.github.io/MetalSlugWeb/preview.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
 
@@ -97,6 +97,8 @@
       width: 100% !important;
       height: 100% !important;
       border: none;
+      image-rendering: optimizeSpeed;
+      image-rendering: -webkit-optimize-contrast;
       image-rendering: pixelated;
     }
 
@@ -134,21 +136,22 @@
     }
   </style>
 
-  <!-- CONFIGURACIÓN GLOBAL PREVENTIVA ANTES DE CARGAR NINGÚN SCRIPT -->
+  <!-- CONFIGURACIÓN GLOBAL DE RENDIMIENTO Y ESTABILIDAD -->
   <script type="text/javascript">
     window.EJS_player = '#game-canvas-target';
-    window.EJS_core = 'fbneo';
+    window.EJS_core = 'fbalpha2012'; // Núcleo ligero optimizado para móviles
     window.EJS_gameName = 'Metal Slug';
     window.EJS_gameUrl = 'mslug.zip';
     window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
     window.EJS_startOnLoaded = true;
     
-    // Blindaje de estabilidad contra errores de hilos y almacenamiento local
+    // Blindaje anti-crash y prevención de errores de red/almacenamiento
     window.EJS_threads = false;
     window.EJS_disableDatabases = true;
     window.EJS_volume = 0.5;
     window.EJS_color1 = "#000000";
 
+    // Perfil móvil de alta respuesta táctil
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
       window.EJS_mobil = true;
       window.EJS_touch = true;
@@ -173,7 +176,7 @@
   </main>
 
   <footer>
-    <span>Stable Production Build</span>
+    <span>Optimized Mobile WebAssembly Engine</span>
   </footer>
 
   <script type="text/javascript">
@@ -194,9 +197,10 @@
           e.preventDefault();
         }
 
-        document.getElementById('val-status').innerText = "LOADING CORE...";
+        document.getElementById('val-status').innerText = "BOOTING...";
         document.getElementById('val-status').style.color = "#ffcc00";
 
+        // Desvanecimiento y limpieza física del DOM
         heroSplash.style.opacity = '0';
         heroSplash.style.pointerEvents = 'none';
         setTimeout(function() { 
@@ -205,7 +209,7 @@
           }
         }, 200);
 
-        // Inyección controlada del cargador oficial
+        // Inyección controlada del cargador de la CDN
         var loader = document.createElement('script');
         loader.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
         loader.async = true;
@@ -218,12 +222,12 @@
         loader.onerror = function() {
           document.getElementById('val-status').innerText = "LOAD ERROR";
           document.getElementById('val-status').style.color = "#ff3300";
-          alert("Error al conectar con la CDN del emulador.");
         };
 
         document.body.appendChild(loader);
       }
 
+      // Eventos duales optimizados para respuesta inmediata
       heroSplash.addEventListener('click', initEngine);
       heroSplash.addEventListener('touchend', initEngine, { passive: false });
     });
