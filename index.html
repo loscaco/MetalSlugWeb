@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Metal Slug — WebAssembly Engine</title>
+  <title>Metal Slug — Ultimate Production Port</title>
 
   <meta name="description" content="Metal Slug Arcade WebAssembly Port optimizado para móviles." />
   <meta property="og:type" content="website" />
@@ -133,6 +133,28 @@
       padding: 2px;
     }
   </style>
+
+  <!-- CONFIGURACIÓN GLOBAL PREVENTIVA ANTES DE CARGAR NINGÚN SCRIPT -->
+  <script type="text/javascript">
+    window.EJS_player = '#game-canvas-target';
+    window.EJS_core = 'fbneo';
+    window.EJS_gameName = 'Metal Slug';
+    window.EJS_gameUrl = 'mslug.zip';
+    window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+    window.EJS_startOnLoaded = true;
+    
+    // Blindaje de estabilidad contra errores de hilos y almacenamiento local
+    window.EJS_threads = false;
+    window.EJS_disableDatabases = true;
+    window.EJS_volume = 0.5;
+    window.EJS_color1 = "#000000";
+
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      window.EJS_mobil = true;
+      window.EJS_touch = true;
+      window.EJS_gameFullScreen = false;
+    }
+  </script>
 </head>
 <body>
 
@@ -144,14 +166,14 @@
   <main id="arcade-wrapper">
     <div id="hero-splash">
       <button class="arcade-btn-main">INSERT COIN / PLAY</button>
-      <p style="margin-top: 8px; color: #666; font-size: 0.7rem;">Toca para activar motor y audio</p>
+      <p style="margin-top: 8px; color: #666; font-size: 0.7rem;">Toca para iniciar el juego</p>
     </div>
 
     <div id="game-canvas-target"></div>
   </main>
 
   <footer>
-    <span>Stable WebAssembly Engine</span>
+    <span>Stable Production Build</span>
   </footer>
 
   <script type="text/javascript">
@@ -172,7 +194,7 @@
           e.preventDefault();
         }
 
-        document.getElementById('val-status').innerText = "BOOTING...";
+        document.getElementById('val-status').innerText = "LOADING CORE...";
         document.getElementById('val-status').style.color = "#ffcc00";
 
         heroSplash.style.opacity = '0';
@@ -183,25 +205,7 @@
           }
         }, 200);
 
-        // --- CONFIGURACIÓN GLOBAL LIMPIA ---
-        window.EJS_player = '#game-canvas-target';
-        window.EJS_core = 'fbneo';
-        window.EJS_gameName = 'Metal Slug';
-        window.EJS_gameUrl = 'mslug.zip';
-        window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
-        window.EJS_startOnLoaded = true;
-        window.EJS_volume = 1.0;
-        window.EJS_threads = false;
-        window.EJS_disableDatabases = true;
-        window.EJS_color1 = "#000000";
-
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-          window.EJS_mobil = true;
-          window.EJS_touch = true;
-          window.EJS_gameFullScreen = false;
-        }
-
-        // Carga segura del loader principal
+        // Inyección controlada del cargador oficial
         var loader = document.createElement('script');
         loader.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
         loader.async = true;
@@ -212,8 +216,9 @@
         };
 
         loader.onerror = function() {
-          document.getElementById('val-status').innerText = "CDN ERROR";
+          document.getElementById('val-status').innerText = "LOAD ERROR";
           document.getElementById('val-status').style.color = "#ff3300";
+          alert("Error al conectar con la CDN del emulador.");
         };
 
         document.body.appendChild(loader);
