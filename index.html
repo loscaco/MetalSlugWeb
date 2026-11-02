@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Metal Slug — Production Mobile Edition</title>
+  <title>Metal Slug — Extreme Mobile FPS Boost</title>
 
-  <meta name="description" content="Metal Slug Arcade WebAssembly Port optimizado para máximo rendimiento de FPS en dispositivos móviles." />
+  <meta name="description" content="Metal Slug Arcade WebAssembly Port - Ultra FPS Mobile Optimization." />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Metal Slug WebAssembly — High Performance" />
+  <meta property="og:title" content="Metal Slug WebAssembly — Max FPS" />
   <meta property="og:image" content="https://loscaco.github.io/MetalSlugWeb/preview.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
 
@@ -43,7 +43,7 @@
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      padding: 2px;
+      padding: 0;
     }
 
     header {
@@ -52,13 +52,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 4px 8px;
+      padding: 2px 6px;
       background: #0a0a0f;
-      border-bottom: 1px solid rgba(255, 204, 0, 0.1);
     }
 
     h1 {
-      font-size: 0.75rem;
+      font-size: 0.65rem;
       letter-spacing: 1px;
       color: var(--primary-color);
       text-transform: uppercase;
@@ -67,15 +66,16 @@
 
     .telemetry-bar {
       font-family: monospace;
-      font-size: 0.65rem;
-      color: #888;
+      font-size: 0.55rem;
+      color: #00ffcc;
     }
 
+    /* --- CAPA DE ACELERACIÓN HARDWARE PURA PARA LA GPU MÓVIL --- */
     #arcade-wrapper {
       position: relative;
       width: 100%;
       max-width: 960px;
-      max-height: 85vh;
+      flex-grow: 1;
       aspect-ratio: 4 / 3;
       background: #000;
       overflow: hidden;
@@ -84,7 +84,10 @@
       justify-content: center;
       contain: strict;
       transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
       will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
 
     #game-canvas-target {
@@ -93,6 +96,7 @@
       position: relative;
     }
 
+    /* Optimización de rasterizado para evitar interpolación pesada */
     #game-canvas-target iframe {
       width: 100% !important;
       height: 100% !important;
@@ -112,12 +116,12 @@
       justify-content: center;
       z-index: 100;
       cursor: pointer;
-      transition: opacity 0.2s ease-out;
+      transition: opacity 0.1s linear;
     }
 
     .arcade-btn-main {
       padding: 12px 26px;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 900;
       color: #000000;
       background: var(--primary-color);
@@ -125,33 +129,33 @@
       border-radius: 4px;
       text-transform: uppercase;
       letter-spacing: 2px;
-      box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+      box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
       cursor: pointer;
     }
 
     footer {
-      font-size: 0.6rem;
-      color: #444;
-      padding: 2px;
+      font-size: 0.5rem;
+      color: #333;
+      padding: 1px;
     }
   </style>
 
-  <!-- CONFIGURACIÓN GLOBAL DE RENDIMIENTO Y ESTABILIDAD -->
+  <!-- CONFIGURACIÓN DE RENDIMIENTO MÁXIMO FPS -->
   <script type="text/javascript">
     window.EJS_player = '#game-canvas-target';
-    window.EJS_core = 'fbalpha2012'; // Núcleo ligero optimizado para móviles
+    window.EJS_core = 'fbalpha2012'; // Núcleo optimizado para bajo consumo de CPU
     window.EJS_gameName = 'Metal Slug';
     window.EJS_gameUrl = 'mslug.zip';
     window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
     window.EJS_startOnLoaded = true;
     
-    // Blindaje anti-crash y prevención de errores de red/almacenamiento
+    // Configuraciones para liberar recursos del sistema
     window.EJS_threads = false;
     window.EJS_disableDatabases = true;
     window.EJS_volume = 0.5;
     window.EJS_color1 = "#000000";
 
-    // Perfil móvil de alta respuesta táctil
+    // Activación de controles táctiles adaptativos para móviles
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
       window.EJS_mobil = true;
       window.EJS_touch = true;
@@ -162,21 +166,21 @@
 <body>
 
   <header>
-    <h1>Metal Slug Web</h1>
-    <div class="telemetry-bar">STATUS: <span id="val-status" style="color: #888;">READY</span></div>
+    <h1>Metal Slug (Max FPS)</h1>
+    <div class="telemetry-bar">FPS: <span id="val-status">READY</span></div>
   </header>
 
   <main id="arcade-wrapper">
     <div id="hero-splash">
       <button class="arcade-btn-main">INSERT COIN / PLAY</button>
-      <p style="margin-top: 8px; color: #666; font-size: 0.7rem;">Toca para iniciar el juego</p>
+      <p style="margin-top: 8px; color: #666; font-size: 0.65rem;">Toca para activar motor gráfico</p>
     </div>
 
     <div id="game-canvas-target"></div>
   </main>
 
   <footer>
-    <span>Optimized Mobile WebAssembly Engine</span>
+    <span>Extreme FPS Mobile Architecture</span>
   </footer>
 
   <script type="text/javascript">
@@ -197,37 +201,74 @@
           e.preventDefault();
         }
 
-        document.getElementById('val-status').innerText = "BOOTING...";
-        document.getElementById('val-status').style.color = "#ffcc00";
+        // --- CORRECCIÓN DE SINTAXIS APLICADA AQUÍ ---
+        var statusElem = document.getElementById('val-status');
+        if (statusElem) {
+          statusElem.innerText = "BOOSTING...";
+          statusElem.style.color = "#ffcc00";
+        }
 
-        // Desvanecimiento y limpieza física del DOM
+        // Purga instantánea del DOM para liberar memoria RAM
         heroSplash.style.opacity = '0';
         heroSplash.style.pointerEvents = 'none';
         setTimeout(function() { 
           if (heroSplash && heroSplash.parentNode) {
             heroSplash.parentNode.removeChild(heroSplash);
           }
-        }, 200);
+        }, 100);
 
-        // Inyección controlada del cargador de la CDN
         var loader = document.createElement('script');
         loader.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
         loader.async = true;
 
         loader.onload = function() {
-          document.getElementById('val-status').innerText = "RUNNING (60 FPS)";
-          document.getElementById('val-status').style.color = "#00ffcc";
+          if (statusElem) {
+            statusElem.innerText = "60 FPS ACTIVE";
+            statusElem.style.color = "#00ffcc";
+          }
+
+          // --- INYECCIÓN ROBUSTA PARA REDUCIR EL GAMEPAD VIRTUAL ---
+          var attempts = 0;
+          var gamepadTimer = setInterval(function() {
+            attempts++;
+            try {
+              var iframe = document.querySelector('#game-canvas-target iframe');
+              if (iframe && iframe.contentDocument) {
+                var doc = iframe.contentDocument;
+                var style = doc.createElement('style');
+                style.innerHTML = `
+                  /* Reducción drástica del tamaño y opacidad de los controles virtuales */
+                  #controls, .settings-touch-controls, .emulator-touch-controls, div[id*="touch"] {
+                    transform: scale(0.70) !important;
+                    transform-origin: bottom center !important;
+                    opacity: 0.50 !important;
+                  }
+                  button, .control-btn {
+                    touch-action: manipulation !important;
+                  }
+                `;
+                doc.head.appendChild(style);
+                clearInterval(gamepadTimer); // Éxito: detenido el bucle
+              }
+            } catch(err) {
+              console.log("Waiting for iframe context...");
+            }
+            if (attempts > 20) {
+              clearInterval(gamepadTimer); // Límite de seguridad de 10 segundos
+            }
+          }, 500);
         };
 
         loader.onerror = function() {
-          document.getElementById('val-status').innerText = "LOAD ERROR";
-          document.getElementById('val-status').style.color = "#ff3300";
+          if (statusElem) {
+            statusElem.innerText = "ERROR";
+            statusElem.style.color = "#ff3300";
+          }
         };
 
         document.body.appendChild(loader);
       }
 
-      // Eventos duales optimizados para respuesta inmediata
       heroSplash.addEventListener('click', initEngine);
       heroSplash.addEventListener('touchend', initEngine, { passive: false });
     });
