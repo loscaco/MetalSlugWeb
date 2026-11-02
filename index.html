@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Metal Slug — Ultimate WebAssembly Engine</title>
+  <title>Metal Slug — Stable WebAssembly Engine</title>
 
-  <meta name="description" content="Metal Slug Arcade WebAssembly Port optimizado para máximo rendimiento y estabilidad en móviles." />
+  <meta name="description" content="Metal Slug Arcade WebAssembly Port optimizado para móviles." />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Metal Slug WebAssembly — Pro Port" />
+  <meta property="og:title" content="Metal Slug WebAssembly" />
   <meta property="og:image" content="https://loscaco.github.io/MetalSlugWeb/preview.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
 
@@ -159,7 +159,7 @@
   </main>
 
   <footer>
-    <span>Optimized WebAssembly Engine</span>
+    <span>Stable WebAssembly Engine</span>
   </footer>
 
   <script type="text/javascript">
@@ -167,7 +167,6 @@
       var heroSplash = document.getElementById('hero-splash');
       var isInitialized = false;
 
-      // Bloquear gestos de desplazamiento nativos indeseados en la zona de juego móvil
       document.body.addEventListener('touchmove', function(e) { 
         if(isInitialized) e.preventDefault(); 
       }, { passive: false });
@@ -176,7 +175,6 @@
         if (isInitialized) return;
         isInitialized = true;
 
-        // Prevenir propagación de eventos múltiples
         if (e) {
           e.stopPropagation();
           e.preventDefault();
@@ -185,7 +183,6 @@
         document.getElementById('val-status').innerText = "BOOTING...";
         document.getElementById('val-status').style.color = "#ffcc00";
 
-        // Desvanecimiento y limpieza segura del DOM
         heroSplash.style.opacity = '0';
         heroSplash.style.pointerEvents = 'none';
         setTimeout(function() { 
@@ -194,7 +191,7 @@
           }
         }, 200);
 
-        // --- CONFIGURACIÓN TÉCNICA DEL EMULADOR ---
+        // --- CONFIGURACIÓN ESTABLE DEL EMULADOR (CORREGIDA) ---
         window.EJS_player = '#game-canvas-target';
         window.EJS_core = 'fbneo';
         window.EJS_gameName = 'Metal Slug';
@@ -203,24 +200,21 @@
         window.EJS_startOnLoaded = true;
         window.EJS_volume = 1.0;
 
-        // Parámetros de rendimiento multihilo y gestión de memoria
-        window.EJS_threads = true;
-        window.EJS_disableDatabases = true;
+        // Correcciones clave para evitar errores de settings y SharedArrayBuffer en GitHub Pages:
+        window.EJS_threads = false;          // Desactivado para evitar el error de SharedArrayBuffer
+        window.EJS_disableDatabases = true;  // Evita el fallo de lectura de localStorage/settings (Error 'AL')
         window.EJS_color1 = "#000000";
 
-        // Aceleración avanzada por hardware si el navegador lo soporta
         if (window.OffscreenCanvas) {
           window.EJS_offscreenCanvas = true;
         }
 
-        // Perfil adaptativo para entornos móviles y WebViews
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
           window.EJS_mobil = true;
           window.EJS_touch = true;
           window.EJS_gameFullScreen = false;
         }
 
-        // Inyección dinámica del cargador con control de errores robusto
         var loader = document.createElement('script');
         loader.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
         loader.async = true;
@@ -233,18 +227,15 @@
         loader.onerror = function() {
           document.getElementById('val-status').innerText = "CDN ERROR";
           document.getElementById('val-status').style.color = "#ff3300";
-          alert("Error crítico: No se pudieron cargar los componentes del emulador desde la red.");
         };
 
         document.body.appendChild(loader);
       }
 
-      // Soporte dual para touch y click sin conflictos
       heroSplash.addEventListener('click', initEngine);
       heroSplash.addEventListener('touchend', initEngine, { passive: false });
     });
 
-    // Deshabilitar menú contextual para una experiencia de arcade limpia
     document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
   </script>
 </body>
